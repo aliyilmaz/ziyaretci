@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ziyaretçi</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    <script defer src="assets/script.js"></script>
+    <script src="assets/FileSaver.js/dist/FileSaver.min.js"></script>
+
+</head>
+<body>
+    <header>
+        <h1>Ziyaretçi</h1>
+        <button id="addVisitorButton">Yeni</button>
+    </header>
+
+    <main>
+        <!-- Kontrol Paneli -->
+        <div class="controls">
+            <div class="searchbox">
+                <div id="total_result">
+                    <span></span>
+                </div>
+                <input type="text" id="searchInput" placeholder="Ara...">                               
+            </div>
+            
+            
+            <button id="deleteAllButton">Tümünü Sil</button> 
+            <button id="deleteSelectedButton">Seçilenleri Sil</button> 
+            <input type="file" id="importFile" style="display:none;" accept=".csv">
+            <button id="exportButton">CVS Export</button>
+            <div class="controlsRight">                
+                <button id="importButton">CVS Import</button>
+                <button id="sortButton">Sırala</button>            
+                <button id="filterButton">Filtrele</button>            
+                <button id="groupToggleButton">
+                    Grupla
+                </button>
+                <button id="groupButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
+                        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
+                      </svg>
+                </button>
+                <!-- Kayıt Sayısı Seçim Kutusu --> 
+                 <select id="itemsPerPageSelect"> 
+                    <option value="5">5</option>                     
+                    <option value="15">15</option>                     
+                    <option value="25">25</option>                     
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                </select>
+            </div>
+        </div>
+
+
+        <table id="visitorTable">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAll" /></th>
+                    <th role="columnheader">Id</th>
+                    <th role="columnheader">Giriş</th>
+                    <th role="columnheader">Tür</th>
+                    <th role="columnheader">Daire</th>
+                    <th role="columnheader">Kime</th>
+                    <th role="columnheader">Adı</th>
+                    <th role="columnheader">Plaka</th>
+                    <th role="columnheader">Açıklama</th>
+                    <th role="columnheader">Bildirim</th>
+                    <th role="columnheader">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Ziyaretçi verileri burada dinamik olarak yüklenecek -->
+            </tbody>
+        </table>
+
+        <div id="pagination">
+            <!-- Sayfalama butonları buraya gelecek -->
+        </div>
+    </main>
+
+    <!-- Yeni Kayıt Formu Modal -->
+    <div id="visitorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2></h2>
+            <form id="visitorForm">
+                <label for="entryDate">Giriş Tarihi:</label>
+                <input type="datetime-local" id="entryDate" required>
+
+                <label for="exitDate">Çıkış Tarihi:</label>
+                <input type="datetime-local" id="exitDate">
+
+                <label for="visitorType">Ziyaretçi Tipi:</label>
+                <select id="visitorType">
+                    <option value="Yaya">Yaya</option>
+                    <option value="Araç">Araç</option>
+                    <option value="Paket Yemek">Paket Yemek</option>
+                    <option value="Kargo">Kargo</option>
+                </select>
+
+                <label for="apartment">Hangi Daireye Geldi:</label>
+                <input type="text" id="apartment" required>
+
+                <label for="host">Kime Geldi:</label>
+                <input type="text" id="host">
+
+                <label for="visitorName">Ziyaretçi Adı:</label>
+                <input type="text" id="visitorName">
+
+                <label for="visitorPlate">Ziyaretçi Plaka:</label>
+                <input type="text" id="visitorPlate">
+
+                <label for="description">Açıklama:</label>
+                <textarea id="description"></textarea>
+
+                <button type="submit">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filtreleme Modal -->
+    <div id="filterModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Filtrele</h2>
+            <form id="filterForm">
+                <div class="checkbox-wrapper">
+                    <label for="scope" class="checkbox-label">Kapsam:</label>
+                    <select id="scope" name="scope">
+                        <option value="hepsi">Hepsi</option>
+                        <option value="haftalik">1 Haftalık</option>
+                        <option value="aylik">1 Aylık</option>
+                        <option value="yillik">1 Yıllık</option>
+                        <option value="iki-yillik">2 Yıllık</option>
+                    </select>
+                </div>
+                        
+                
+                <div class="checkbox-wrapper">
+                    <div>
+                        <input type="checkbox" id="entryDate" name="filterOptions" value="entryDate" />
+                    </div>
+                    <div class="checkbox-label">
+                        <label for="entryDate">Giriş Tarihi</label>
+                    </div>
+                </div>
+                
+                <div class="checkbox-wrapper">
+                    <div>
+                        <input type="checkbox" id="exitDate" name="filterOptions" value="exitDate" />
+                    </div>
+                    <div class="checkbox-label">
+                        <label for="exitDate">Çıkış Tarihi</label>
+                    </div>
+                </div>
+
+                <div class="checkbox-wrapper">
+                    <div>
+                        <input type="checkbox" id="visitorType" name="filterOptions" value="visitorType" />
+                    </div>
+                    <div class="checkbox-label">
+                        <label for="visitorType">Ziyaretçi Tipi</label>
+                    </div>
+                </div>
+                <div class="checkbox-wrapper">
+                    <div>
+                        <input type="checkbox" id="apartment" name="filterOptions" value="apartment" />
+                    </div>
+                    <div class="checkbox-label">
+                        <label for="apartment">Daire</label>
+                    </div>
+                </div>
+                <div class="checkbox-wrapper">
+                    <div>
+                        <input type="checkbox" id="host" name="filterOptions" value="host" />
+                    </div>
+                    <div class="checkbox-label">
+                        <label for="host">Kime Geldi</label>
+                    </div>
+                </div>
+                <div class="checkbox-wrapper">
+                    <div>
+                        <input type="checkbox" id="visitorName" name="filterOptions" value="visitorName" />
+                    </div>
+                    <div class="checkbox-label">
+                        <label for="visitorName">Ziyaretçi Adı</label>
+                    </div>
+                </div>
+                <div class="checkbox-wrapper">
+                    <div>
+                        <input type="checkbox" id="visitorPlate" name="filterOptions" value="visitorPlate" />
+                    </div>
+                    <div class="checkbox-label">
+                        <label for="visitorPlate">Ziyaretçi Plaka</label>
+                    </div>
+                </div>
+                <div class="checkbox-wrapper">
+                    <div>
+                        <input type="checkbox" id="description" name="filterOptions" value="description" />
+                    </div>
+                    <div class="checkbox-label">
+                        <label for="description">Açıklama</label>
+                    </div>
+                </div>
+                <button type="submit">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Sıralama Modal -->
+    <div id="sortModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Sırala</h2>
+            <form id="sortForm">
+                <div class="sort-wrapper">
+                    <label for="sortColumn" class="sort-label">Sütun Adı:</label>
+                    <select id="sortColumn" name="sortColumn">
+                        <option value="id">Id</option>
+                        <option value="entryDate">Giriş Tarihi</option>
+                        <option value="exitDate">Çıkış Tarihi</option>
+                        <option value="visitorType">Ziyaretçi Tipi</option>
+                        <option value="apartment">Daire</option>
+                        <option value="host">Kime Geldi</option>
+                        <option value="visitorName">Ziyaretçi Adı</option>
+                        <option value="visitorPlate">Ziyaretçi Plaka</option>
+                        <option value="description">Açıklama</option>
+                    </select>
+                </div>
+                <div class="sort-wrapper">
+                    <label for="sortOrder" class="sort-label">Sıralama:</label>
+                    <select id="sortOrder" name="sortOrder">
+                        <option value="asc">Küçükten Büyüğe</option>
+                        <option value="desc">Büyükten Küçüğe</option>
+                    </select>
+                </div>
+                <button type="submit">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Grupla Modal -->
+    <div id="groupModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Grupla</h2>
+            <form id="groupForm">
+                <div class="sort-wrapper">
+                    <label for="groupColumn" class="sort-label">Sütun Adı:</label>
+                    <select id="groupColumn" name="groupColumn">
+                        <option value="visitorType">Ziyaretçi Tipi</option>
+                        <option value="apartment">Daire</option>
+                        <option value="host">Kime Geldi</option>
+                        <option value="visitorName">Ziyaretçi Adı</option>
+                        <option value="visitorPlate">Ziyaretçi Plaka</option>
+                        <option value="description">Açıklama</option>
+                        <option value="notified">Bildirim</option>
+                    </select>
+                </div>
+                <button type="submit">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+
+</body>
+</html>
